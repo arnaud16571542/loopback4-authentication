@@ -50,15 +50,21 @@ export class StrategyAdapter<T> {
       };
 
       // add failure state handler to strategy instance
-      strategy.fail = (challenge: string) => {
-        reject(new HttpErrors.Unauthorized(challenge));
+      strategy.fail = (challenge: any) => {
+        if (typeof challenge == 'string')
+          reject(new HttpErrors.Unauthorized(challenge));
+        if (challenge instanceof HttpErrors)
+          reject(challenge);
       };
 
       // add error state handler to strategy instance
-      strategy.error = (error: string) => {
-        reject(new HttpErrors.Unauthorized(error));
+      strategy.error = (error: any) => {
+        if (typeof error == 'string')
+          reject(new HttpErrors.Unauthorized(error));
+        if (error instanceof HttpErrors)
+          reject(error);
       };
-
+      
       strategy.redirect = (url: string) => {
         if (response) {
           response.redirect(url, 302);
